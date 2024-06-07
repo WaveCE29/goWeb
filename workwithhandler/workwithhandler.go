@@ -65,6 +65,13 @@ func courseHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 			return
 		}
+
+		if newCourse.ID != 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		newCourse.ID = getNextID()
 		CourseList = append(CourseList, newCourse)
 		w.WriteHeader(http.StatusCreated)
 		log.Println(CourseList)
@@ -73,6 +80,16 @@ func courseHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+}
+
+func getNextID() int {
+	highestID := -1
+	for _, course := range CourseList {
+		if course.ID > highestID {
+			highestID = course.ID
+		}
+	}
+	return highestID + 1
 }
 
 func main() {
